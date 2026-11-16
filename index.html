@@ -92,14 +92,16 @@
   .phones .shot:nth-child(2){transform:rotate(5deg) translate(-14px,14px);z-index:2}
   .shot:nth-child(even)::before{transform:rotate(5deg);background:rgba(201,151,74,.45)}
 
-  /* ticket + photo */
-  .collage.ticket{flex-direction:column}
-  .ticket .shot:nth-child(1){--pad:0px}
-  .ticket .shot:nth-child(1){width:min(78cqw,400px,calc(30cqh * 388 / 164));aspect-ratio:388/164;padding:0;border-radius:10px;transform:rotate(-4deg) translateX(-4%);z-index:2;
-        -webkit-mask:radial-gradient(circle 9px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 9px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat}
-  .ticket .shot:nth-child(1) img{border-radius:10px}
+    /* ticket + photo */
+  .collage.ticket{display:block;position:relative;flex:none;height:auto;width:min(100cqw,540px,calc(100cqh * 1.22));aspect-ratio:1/.82}
+  .ticket .shot{position:absolute}
+  .ticket .shot:nth-child(1){--pad:0px;width:48%;aspect-ratio:1080/1126;left:1%;top:1%;z-index:2;background:#1c2230;border-radius:12px;transform:rotate(-7deg);
+        box-shadow:0 16px 30px rgba(20,20,40,.35);
+        -webkit-mask:radial-gradient(circle 9px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 9px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat;
+                mask:radial-gradient(circle 9px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 9px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat}
+  .ticket .shot:nth-child(1) img{object-fit:contain;border-radius:12px}
   .ticket .shot:nth-child(1)::before{display:none}
-  .ticket .shot:nth-child(2){width:min(80cqw,440px,calc(64cqh * 836 / 627));aspect-ratio:836/627;transform:rotate(3deg) translateX(4%);margin-top:-14px;z-index:1}
+  .ticket .shot:nth-child(2){width:70%;aspect-ratio:836/627;right:1%;bottom:2%;z-index:1;transform:rotate(3deg)}
   .ticket .shot:nth-child(2)::before{left:auto;right:18px;margin:0}
 
   /* three-photo grid */
