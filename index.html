@@ -78,6 +78,16 @@
 
   /* ---------- Story ---------- */
   .story .emoji{font-size:clamp(3rem,10vw,4.2rem);margin-bottom:18px}
+  .story .shots{display:flex;gap:14px;justify-content:center;margin-top:20px}
+  .story .shots img{height:min(300px,34svh);width:auto;border-radius:12px;border:3px solid #fff;box-shadow:0 10px 24px rgba(90,30,58,.2);cursor:zoom-in}
+  .story .shots img:nth-child(odd){transform:rotate(-2.5deg)}
+  .story .shots img:nth-child(even){transform:rotate(2.5deg)}
+  .story.has-shots .emoji{display:none}
+  .story.has-shots .title{font-size:clamp(1.7rem,5.5vw,2.5rem)}
+  .story.has-shots .text{margin-top:10px}
+  #zoom{position:fixed;inset:0;z-index:45;background:rgba(43,22,32,.9);display:none;place-items:center;padding:20px;cursor:zoom-out}
+  #zoom.on{display:grid}
+  #zoom img{max-width:100%;max-height:88svh;border-radius:14px}
   .story .date{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:500;margin-bottom:10px}
 
   /* ---------- Photos ---------- */
@@ -142,6 +152,8 @@
   </div>
 </div>
 
+<div id="zoom"><img alt=""></div>
+
 <!-- =================== ALBUM =================== -->
 <div id="album">
   <div class="book" id="book"></div>
@@ -162,9 +174,10 @@ const CONFIG = {
   greeting: "Hello my love,",        // first line on the cover page
   startDate: "2025-12-05T00:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
 
-  // each moment = one page of the album
+  // each moment = one page of the album. Add images: ["photos/x.jpg", ...] to show pictures on that page
   story: [
-    { emoji: "👋", date: "The first hello", title: "Where it all started", text: "Write how you two met here — the place, the first thing you noticed about her." },
+    { emoji: "👋", date: "The first hello", title: "Where it all started", text: "From \"okee sahabat denis\" to my favourite person 💕",
+      images: ["photos/chat1.jpg", "photos/chat2.jpg"] },
     { emoji: "☕", date: "First date",      title: "Nervous & happy",     text: "Where did you go? What did you eat? What made you want a second date?" },
     { emoji: "💌", date: "Becoming us",     title: "Official",            text: "The day you asked her (or she asked you!). What did it feel like?" },
     { emoji: "🎡", date: "Favourite trip",  title: "Our little adventure", text: "A trip, a day out, or a random night that became a favourite memory." },
@@ -244,7 +257,9 @@ CONFIG.story.forEach((m, i) => add(
    <div class="emoji anim" style="--d:.3s">${m.emoji || "♥"}</div>
    <div class="date anim" style="--d:.4s">${esc(m.date)}</div>
    <h2 class="title anim" style="--d:.5s">${esc(m.title)}</h2>
-   <p class="text anim" style="--d:.65s">${esc(m.text)}</p>`, "story"));
+   <p class="text anim" style="--d:.65s">${esc(m.text)}</p>
+   ${m.images ? `<div class="shots anim" style="--d:.8s">${m.images.map(src => `<img src="${src}" alt="">`).join("")}</div>` : ""}`,
+  m.images ? "story has-shots" : "story"));
 
 // photos
 const grads = ["#f6d9de,#f1b7c4","#fbe7d0,#f2c79a","#e9dff3,#c9b4e6","#d9ecef,#a9d3da","#fde2e4,#e9a3b6","#f3e2cf,#e2c08f"];
@@ -285,6 +300,12 @@ add(`<div class="eyebrow anim" style="--d:.15s">One last thing</div>
 
 $("book").innerHTML = pages.map((p, i) => `<section class="page ${p.cls}" data-i="${i}">${p.html}</section>`).join("");
 const pageEls = [...document.querySelectorAll(".page")];
+
+/* ---------- tap a picture to zoom ---------- */
+$("book").addEventListener("click", e => {
+  if(e.target.matches(".shots img")){ $("zoom").querySelector("img").src = e.target.src; $("zoom").classList.add("on"); }
+});
+$("zoom").addEventListener("click", () => $("zoom").classList.remove("on"));
 
 /* ---------- page turning ---------- */
 let cur = 0;
