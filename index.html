@@ -18,19 +18,37 @@
   .hand{font-family:Caveat,cursive}
   button{font:inherit;border:0;cursor:pointer;background:none;color:inherit}
 
-  /* ---------- Envelope intro ---------- */
+  /* ---------- Book cover intro ---------- */
   #gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#ffd6e2,#f7a1bb 55%,#e86f95 100%);transition:opacity 1s ease,visibility 1s}
   #gate.gone{opacity:0;visibility:hidden}
   .gate-inner{text-align:center;color:var(--plum);padding:24px}
   .gate-inner p{font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;font-weight:500;opacity:.85;margin-top:28px}
-  .envelope{width:min(280px,72vw);aspect-ratio:1.45;position:relative;margin:0 auto;cursor:pointer;filter:drop-shadow(0 20px 40px rgba(150,30,70,.35));animation:bob 3s ease-in-out infinite}
-  .envelope .body{position:absolute;inset:0;background:var(--paper);border-radius:6px}
-  .envelope .flap{position:absolute;left:0;right:0;top:0;height:62%;background:#f3e2cf;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top;transition:transform .8s ease;z-index:2}
-  .envelope .front{position:absolute;inset:0;background:linear-gradient(to top right,#f7e8d6 50%,transparent 50%),linear-gradient(to top left,#f7e8d6 50%,transparent 50%);border-radius:6px;z-index:3}
-  .envelope .seal{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:var(--rose);display:grid;place-items:center;color:#fff;font-size:22px;z-index:4;box-shadow:inset 0 -3px 0 rgba(0,0,0,.15);transition:transform .5s}
-  .envelope .to{position:absolute;bottom:14%;left:0;right:0;text-align:center;z-index:4;color:var(--plum);font-size:1.6rem}
-  .envelope.open .flap{transform:rotateX(180deg)}
-  .envelope.open .seal{transform:translate(-50%,-50%) scale(0)}
+  /* book cover intro */
+  .gate-inner{perspective:1800px}
+  .book3d{position:relative;width:min(250px,62vw);aspect-ratio:3/4;margin:0 auto;cursor:pointer;animation:bob 3s ease-in-out infinite;
+        transition:transform 1.3s cubic-bezier(.6,.05,.3,1)}
+  .book3d.open{animation:none;transform:translateX(50%)}
+  @media(max-width:600px){.book3d.open{transform:translateX(36%) scale(.72)}}
+  .book3d .pages{position:absolute;inset:5px 0 5px 4px;background:#fdf6ee;border-radius:3px 10px 10px 3px;
+        box-shadow:2px 0 0 #eadfd3,4px 0 0 #fbf3ea,6px 0 0 #e4d7c8,8px 0 0 #fbf3ea,10px 1px 0 #ddcfbf,0 26px 50px rgba(120,30,70,.38)}
+  .book3d .inside{position:absolute;inset:5px 0 5px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:22px;text-align:center;color:var(--plum)}
+  .book3d .inside .to{font-family:Caveat,cursive;font-size:clamp(1.6rem,7vw,2.1rem);line-height:1.1}
+  .book3d .inside small{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:var(--rose)}
+  .book3d .cover{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.3s cubic-bezier(.6,.05,.3,1);z-index:3}
+  .book3d.open .cover{transform:rotateY(-168deg)}
+  .cover-front,.cover-back{position:absolute;inset:0;border-radius:4px 12px 12px 4px;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+  .cover-front{background:radial-gradient(circle at 70% 20%,rgba(255,255,255,.12),transparent 55%),linear-gradient(140deg,#9a3762,#5a1e3a 70%);
+        box-shadow:inset 12px 0 16px -8px rgba(0,0,0,.5),inset -1px 0 0 rgba(255,255,255,.12);
+        display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#ecc98a;text-align:center;padding:30px 22px 30px 34px}
+  .cover-front::before{content:"";position:absolute;left:14px;top:0;bottom:0;width:2px;background:rgba(0,0,0,.22);box-shadow:3px 0 0 rgba(255,255,255,.06)}
+  .cover-front::after{content:"";position:absolute;inset:14px 14px 14px 26px;border:1.5px solid rgba(236,201,138,.65);border-radius:6px;pointer-events:none}
+  .cover-front .vol{font-size:.58rem;letter-spacing:.32em;opacity:.85}
+  .cover-front .emblem{width:46px;height:46px;border-radius:50%;border:1.5px solid rgba(236,201,138,.8);display:grid;place-items:center;font-size:20px}
+  .cover-front h2{font-family:Fraunces,serif;font-style:italic;font-weight:300;font-size:clamp(1.6rem,7.5vw,2.1rem);line-height:1.05;color:#f3d79f}
+  .cover-front .who{font-size:.6rem;letter-spacing:.26em;text-transform:uppercase;opacity:.9}
+  .cover-back{transform:rotateY(180deg);background:#f3e2cf;
+        background-image:radial-gradient(circle at 25% 25%,rgba(217,87,122,.18) 2px,transparent 3px),radial-gradient(circle at 75% 75%,rgba(217,87,122,.18) 2px,transparent 3px);
+        background-size:22px 22px;box-shadow:inset -10px 0 14px -8px rgba(0,0,0,.25)}
   @keyframes bob{50%{transform:translateY(-8px)}}
 
   /* ---------- Album shell ---------- */
@@ -229,15 +247,18 @@
 </head>
 <body>
 
-<!-- =================== ENVELOPE =================== -->
+<!-- =================== BOOK COVER =================== -->
 <div id="gate">
   <div class="gate-inner">
-    <div class="envelope" id="envelope" role="button" aria-label="Open the letter">
-      <div class="body"></div><div class="flap"></div><div class="front"></div>
-      <div class="seal">♥</div>
-      <div class="to hand" id="envTo">For you</div>
+    <div class="book3d" id="envelope" role="button" aria-label="Open the book">
+      <div class="pages"></div>
+      <div class="inside"><small>This book belongs to</small><div class="to" id="envTo">For you</div><small>turn the page →</small></div>
+      <div class="cover">
+        <div class="cover-front"><span class="vol">VOL. 1</span><span class="emblem">♥</span><h2>Our First<br>Year</h2><span class="who" id="coverNames">You &amp; Me</span></div>
+        <div class="cover-back"></div>
+      </div>
     </div>
-    <p>tap to open</p>
+    <p>tap to open our book</p>
   </div>
 </div>
 
@@ -315,7 +336,7 @@ const CONFIG = {
     "your quiet moments", "your loud moments", "every version of you", "you on good days", "you on bad days", "you, just you"
   ],
 
-    letter:
+  letter:
 `Dear Baby <3,
 
 Kalau kamu udah sampai di halaman ini, berarti kamu udah lihat lagi sebagian kecil cerita kita. Dari "okee sahabat denis", nonton Zootopia 2, kejebak macet di GBK, sampai semua masakan kamu yang selalu bikin aku ngerasa di rumah.
@@ -339,7 +360,8 @@ I love you, always ❤️
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fill = s => s.replace(/\{her\}/g, CONFIG.herName).replace(/\{you\}/g, CONFIG.yourName);
-$("envTo").textContent = "For " + CONFIG.herName + " 💕";
+$("envTo").textContent = CONFIG.herName + " 💕";
+$("coverNames").textContent = `${CONFIG.yourName} & ${CONFIG.herName}`;
 
 /* ---------- build the album pages ---------- */
 const pages = [];
@@ -465,11 +487,11 @@ function hearts(n = 24, x, y){
   }
 }
 
-/* ---------- envelope ---------- */
+/* ---------- open the book ---------- */
 $("envelope").addEventListener("click", () => {
   $("envelope").classList.add("open");
-  hearts(30, innerWidth/2, innerHeight/2);
-  setTimeout(()=>{ $("gate").classList.add("gone"); go(0); }, 900);
+  setTimeout(()=>hearts(30, innerWidth/2, innerHeight/2), 700);
+  setTimeout(()=>{ $("gate").classList.add("gone"); go(0); }, 2100);
 });
 
 /* ---------- counter ---------- */
