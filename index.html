@@ -124,6 +124,19 @@
         font-size:clamp(.62rem,2.6cqw,.78rem);letter-spacing:.2em;transform:rotate(-10deg);background:rgba(253,246,238,.85);outline:1px dashed var(--rose);outline-offset:3px}
   @keyframes twinkle{50%{opacity:.25;transform:scale(.7)}}
 
+  /* meal photo grid (2-6 photos) */
+  .collage.meals{display:grid;grid-template-columns:repeat(var(--cols),1fr);grid-auto-rows:1fr;gap:clamp(10px,3cqw,16px);flex:none;height:auto;
+        width:min(100cqw,460px,calc(96cqh * var(--cols) / var(--rows)));aspect-ratio:calc(var(--cols) / var(--rows));align-items:stretch;justify-items:stretch}
+  .meals .shot{min-width:0;min-height:0;--pad:6px;background:#fff}
+  .meals .shot::after{content:attr(data-emoji);position:absolute;inset:6px;border-radius:9px;display:grid;place-items:center;font-size:clamp(1.6rem,9cqw,2.6rem);
+        background:linear-gradient(135deg,#fde2e4,#f6d9de)}
+  .meals .shot img{z-index:1}
+  .meals .shot::before{width:50px;margin-left:-25px;height:18px;top:-8px;z-index:3}
+  .meals .shot:nth-child(4n+1){transform:rotate(-3deg)}
+  .meals .shot:nth-child(4n+2){transform:rotate(2.5deg) translateY(4px)}
+  .meals .shot:nth-child(4n+3){transform:rotate(2deg) translateX(3px)}
+  .meals .shot:nth-child(4n+4){transform:rotate(-2deg) translateY(-3px)}
+
   /* three-photo grid */
   .collage.grid3{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:14px;
         width:min(100%,calc(96cqh * 1.15),520px);height:min(96cqh,calc(100cqw / 1.15));margin-inline:auto;flex:none;align-items:stretch;justify-items:stretch}
@@ -218,15 +231,16 @@ const CONFIG = {
   greeting: "Hello my love,",        // first line on the cover page
   startDate: "2025-12-05T00:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
 
-  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style) or "grid3" (3 photos)
+  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style), "grid3" (3 photos) or "meals" (2-6 photos in a grid)
   story: [
     { emoji: "👋", date: "The first hello", title: "Where it all started", text: "From \"okee sahabat denis\" to my favourite person 💕",
       images: ["photos/chat1.jpeg", "photos/chat2.jpeg"] },
     { emoji: "🍿", date: "6 December 2025 · First date", title: "Zootopia 2 & us", text: "Our very first date — a movie night at CGV FX Sudirman 🍿",
       images: ["photos/ticket.jpeg"], layout: "solo" },
     { emoji: "🌙", date: "That same night", title: "Stuck at GBK",   text: "Traffic was so bad we couldn't go home… so we walked around GBK and took our very first photos together 📸",
-      images: ["photos/gbk1.jpeg", "photos/gbk2.jpeg", "photos/date1.jpeg"], layout: "grid3" },
-    { emoji: "💌", date: "Becoming us",     title: "Official",            text: "The day you asked her (or she asked you!). What did it feel like?" },
+      images: ["photos/gbk1.jpeg", "photos/gbk2.jpeg", "photos/gbk3.jpeg"], layout: "grid3" },
+    { emoji: "🍳", date: "Her kitchen",     title: "Made with love",      text: "Thank you for every meal you've ever cooked for me — every single one tasted like home 💕",
+      images: ["photos/meal1.jpeg", "photos/meal2.jpeg", "photos/meal3.jpeg", "photos/meal4.jpeg"], layout: "meals" },
     { emoji: "🎡", date: "Favourite trip",  title: "Our little adventure", text: "A trip, a day out, or a random night that became a favourite memory." },
     { emoji: "🌷", date: "Today",           title: "Almost one year",      text: "Almost a whole year later and I'd choose you again, every single time." }
   ],
@@ -305,7 +319,7 @@ CONFIG.story.forEach((m, i) => add(
    <div class="date anim" style="--d:.4s">${esc(m.date)}</div>
    <h2 class="title anim" style="--d:.5s">${esc(m.title)}</h2>
    ${m.images
-     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}">${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map(src => `<div class="shot"><img src="${src}" alt=""></div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}</div></div>
+     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}"${m.layout === "meals" ? ` style="--cols:${m.images.length > 4 ? 3 : 2};--rows:${Math.ceil(m.images.length / (m.images.length > 4 ? 3 : 2))}"` : ""}>${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map(src => `<div class="shot" data-emoji="${m.layout === "meals" ? "🍳" : ""}"><img src="${src}" alt="" onerror="this.remove()"></div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}</div></div>
         <p class="note anim" style="--d:.9s">${esc(m.text)}</p>`
      : `<p class="text anim" style="--d:.65s">${esc(m.text)}</p>`}`,
   m.images ? "story has-shots" : "story"));
