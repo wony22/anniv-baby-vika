@@ -92,7 +92,7 @@
   .phones .shot:nth-child(2){transform:rotate(5deg) translate(-14px,14px);z-index:2}
   .shot:nth-child(even)::before{transform:rotate(5deg);background:rgba(201,151,74,.45)}
 
-    /* ticket + photo */
+  /* ticket + photo */
   .collage.ticket{display:block;position:relative;flex:none;height:auto;width:min(100cqw,540px,calc(100cqh * 1.22));aspect-ratio:1/.82}
   .ticket .shot{position:absolute}
   .ticket .shot:nth-child(1){--pad:0px;width:48%;aspect-ratio:1080/1126;left:1%;top:1%;z-index:2;background:#1c2230;border-radius:12px;transform:rotate(-7deg);
@@ -104,9 +104,29 @@
   .ticket .shot:nth-child(2){width:70%;aspect-ratio:836/627;right:1%;bottom:2%;z-index:1;transform:rotate(3deg)}
   .ticket .shot:nth-child(2)::before{left:auto;right:18px;margin:0}
 
+  /* ticket only, movie-night style */
+  .collage.solo{display:block;position:relative;flex:none;height:auto;width:min(100cqw,520px,calc(100cqh * 1.0));aspect-ratio:1/1}
+  .solo .film{position:absolute;left:-6%;right:-6%;top:38%;height:24%;background:#2b1620;transform:rotate(-8deg);border-radius:4px;opacity:.9;
+        background-image:repeating-linear-gradient(90deg,#fdf6ee 0 10px,transparent 10px 26px),repeating-linear-gradient(90deg,#fdf6ee 0 10px,transparent 10px 26px);
+        background-size:100% 9px,100% 9px;background-position:0 7px,0 calc(100% - 7px);background-repeat:repeat-x}
+  .solo .shot{position:absolute;--pad:0px;width:70%;aspect-ratio:1080/1126;left:15%;top:1%;z-index:2;background:#1c2230;border-radius:14px;transform:rotate(-4deg);
+        box-shadow:0 22px 44px rgba(20,20,40,.35);
+        -webkit-mask:radial-gradient(circle 11px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat;
+                mask:radial-gradient(circle 11px at 0 50%,#0000 98%,#000) left/51% 100% no-repeat,radial-gradient(circle 11px at 100% 50%,#0000 98%,#000) right/51% 100% no-repeat}
+  .solo .shot img{object-fit:contain;border-radius:14px}
+  .solo .shot::before{display:none}
+  .solo .deco{position:absolute;z-index:3;line-height:1;user-select:none}
+  .solo .pop{font-size:clamp(2.6rem,13cqw,4.2rem);right:2%;bottom:4%;transform:rotate(12deg)}
+  .solo .clap{font-size:clamp(2rem,10cqw,3.2rem);left:3%;top:4%;transform:rotate(-14deg)}
+  .solo .spark{font-size:clamp(1.2rem,6cqw,1.8rem);animation:twinkle 2.4s ease-in-out infinite}
+  .solo .s1{right:10%;top:6%}.solo .s2{left:6%;bottom:18%;animation-delay:.8s}.solo .s3{right:24%;bottom:2%;animation-delay:1.5s}
+  .solo .stamp{left:4%;bottom:3%;padding:8px 12px;border:2px solid var(--rose);border-radius:10px;color:var(--rose);font-weight:500;
+        font-size:clamp(.62rem,2.6cqw,.78rem);letter-spacing:.2em;transform:rotate(-10deg);background:rgba(253,246,238,.85);outline:1px dashed var(--rose);outline-offset:3px}
+  @keyframes twinkle{50%{opacity:.25;transform:scale(.7)}}
+
   /* three-photo grid */
   .collage.grid3{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:14px;
-                width:min(100%,calc(96cqh * 1.15),520px);height:min(96cqh,calc(100cqw / 1.15));margin-inline:auto;flex:none;align-items:stretch;justify-items:stretch}
+        width:min(100%,calc(96cqh * 1.15),520px);height:min(96cqh,calc(100cqw / 1.15));margin-inline:auto;flex:none;align-items:stretch;justify-items:stretch}
   .grid3 .shot:nth-child(1){grid-area:1/1;transform:rotate(-3deg)}
   .grid3 .shot:nth-child(2){grid-area:1/2/3/3;transform:rotate(3deg) translateY(6px)}
   .grid3 .shot:nth-child(3){grid-area:2/1;transform:rotate(2deg) translateX(6px)}
@@ -198,12 +218,12 @@ const CONFIG = {
   greeting: "Hello my love,",        // first line on the cover page
   startDate: "2025-12-05T00:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
 
-  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (wide + photo) or "grid3" (3 photos)
+  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style) or "grid3" (3 photos)
   story: [
     { emoji: "👋", date: "The first hello", title: "Where it all started", text: "From \"okee sahabat denis\" to my favourite person 💕",
       images: ["photos/chat1.jpeg", "photos/chat2.jpeg"] },
     { emoji: "🍿", date: "6 December 2025 · First date", title: "Zootopia 2 & us", text: "Our very first date — a movie night at CGV FX Sudirman 🍿",
-      images: ["photos/ticket.jpeg", "photos/date1.jpeg"], layout: "ticket" },
+      images: ["photos/ticket.jpeg"], layout: "solo" },
     { emoji: "🌙", date: "That same night", title: "Stuck at GBK",   text: "Traffic was so bad we couldn't go home… so we walked around GBK and took our very first photos together 📸",
       images: ["photos/gbk1.jpeg", "photos/gbk2.jpeg", "photos/gbk3.jpeg"], layout: "grid3" },
     { emoji: "💌", date: "Becoming us",     title: "Official",            text: "The day you asked her (or she asked you!). What did it feel like?" },
@@ -285,7 +305,7 @@ CONFIG.story.forEach((m, i) => add(
    <div class="date anim" style="--d:.4s">${esc(m.date)}</div>
    <h2 class="title anim" style="--d:.5s">${esc(m.title)}</h2>
    ${m.images
-     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}">${m.images.map(src => `<div class="shot"><img src="${src}" alt=""></div>`).join("")}</div></div>
+     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}">${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map(src => `<div class="shot"><img src="${src}" alt=""></div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}</div></div>
         <p class="note anim" style="--d:.9s">${esc(m.text)}</p>`
      : `<p class="text anim" style="--d:.65s">${esc(m.text)}</p>`}`,
   m.images ? "story has-shots" : "story"));
