@@ -51,6 +51,25 @@
         background-size:22px 22px;box-shadow:inset -10px 0 14px -8px rgba(0,0,0,.25)}
   @keyframes bob{50%{transform:translateY(-8px)}}
 
+  /* ---------- Question lock (very first screen) ---------- */
+  #quiz{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:20px;background:radial-gradient(circle at 50% 40%,#ffe3ea,#f7b2c6 60%,#e98aa8);transition:opacity .9s ease,visibility .9s}
+  #quiz.gone{opacity:0;visibility:hidden}
+  .qcard{width:min(400px,100%);background:var(--paper);border-radius:22px;padding:34px 26px 28px;text-align:center;box-shadow:0 30px 60px rgba(120,30,70,.25)}
+  .qcard .lock{line-height:1;margin-bottom:12px;display:inline-block}
+  .qcard .lock.open{animation:pop .6s ease}
+  .qcard .lock svg{display:block;filter:drop-shadow(0 6px 10px rgba(217,87,122,.35))}
+  .qcard .lock .shackle{transition:transform .5s cubic-bezier(.3,1.6,.5,1)}
+  .qcard .lock.open .shackle{transform:translateY(-9px)}
+  .qcard h2{font-size:clamp(1.5rem,6vw,1.9rem);line-height:1.2;color:var(--plum);margin-bottom:22px}
+  .qcard h2 em{color:var(--rose);font-style:italic}
+  .qcard input{width:100%;border:0;border-bottom:2px solid #ead3da;background:transparent;padding:10px 4px;font:inherit;font-size:1.15rem;text-align:center;color:var(--plum);outline:none;transition:border-color .2s}
+  .qcard input:focus{border-color:var(--rose)}
+  .qcard button{margin-top:22px;background:var(--rose);color:#fff;padding:14px 34px;border-radius:999px;font-weight:500;font-size:1rem;box-shadow:0 10px 24px rgba(217,87,122,.35)}
+  .qcard .msg{min-height:1.4em;margin-top:16px;font-family:Caveat,cursive;font-size:1.35rem;color:var(--rose)}
+  .qcard.shake{animation:shake .45s ease}
+  @keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+  @keyframes pop{50%{transform:scale(1.35) rotate(-8deg)}}
+
   /* ---------- Album shell ---------- */
   #album{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 14px calc(14px + env(safe-area-inset-bottom));background:radial-gradient(ellipse at top,#ffe9ef,#f7cdd8 70%,#efb3c4)}
   .book{position:relative;width:min(620px,100%);flex:1;max-height:780px;perspective:1800px}
@@ -235,7 +254,7 @@
   .answer .hand{font-size:clamp(2rem,7vw,2.8rem);color:var(--rose)}
   .answer small{display:block;margin-top:10px;color:var(--muted);font-size:.8rem}
 
-  .heart{position:fixed;pointer-events:none;z-index:60;animation:float linear forwards;user-select:none}
+  .heart{position:fixed;pointer-events:none;z-index:80;animation:float linear forwards;user-select:none}
   @keyframes float{to{transform:translateY(-110vh) rotate(var(--r));opacity:0}}
 
   @media(max-height:640px){
@@ -246,6 +265,24 @@
 </style>
 </head>
 <body>
+
+<!-- =================== QUESTION LOCK =================== -->
+<div id="quiz">
+  <form class="qcard" id="qcard" autocomplete="off">
+    <div class="lock" id="qlock"><svg viewBox="0 0 64 74" width="60" height="70" aria-hidden="true">
+      <defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9ab8"/><stop offset="1" stop-color="#d9577a"/></linearGradient></defs>
+      <path class="shackle" d="M20 32 V20 a12 12 0 0 1 24 0 V32" fill="none" stroke="#b9476b" stroke-width="6" stroke-linecap="round"/>
+      <path d="M32 72 C12 58 4 47 4 37 a14 14 0 0 1 28 -7 a14 14 0 0 1 28 7 C60 47 52 58 32 72 Z" fill="url(#hg)"/>
+      <path d="M14 34 a9 9 0 0 1 12 -6" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="32" cy="44" r="5" fill="#7a2343"/><path d="M29.5 46 h5 l1.5 10 h-8 z" fill="#7a2343"/>
+    </svg></div>
+    <div class="eyebrow">Before you open the book</div>
+    <h2 id="qText">Who is the best girlfriend in this world?</h2>
+    <input id="qInput" type="text" placeholder="type your answer…" aria-label="Your answer">
+    <button type="submit">Unlock 💕</button>
+    <div class="msg" id="qMsg"></div>
+  </form>
+</div>
 
 <!-- =================== BOOK COVER =================== -->
 <div id="gate">
@@ -281,6 +318,11 @@ const CONFIG = {
   yourName: "Dennis",                // your name
   greeting: "Hello my love,",        // first line on the cover page
   startDate: "2025-12-05T00:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
+
+  // the lock question on the very first screen
+  quizQuestion: "Who is the best girlfriend in this world?",
+  quizAnswer: "vika",                // not case-sensitive
+  quizWrong: ["Hmm… wrong answer 🤨", "Nope! Think harder 😤", "Hint: she's reading this right now 👀", "Last hint: it starts with V 💕"],
 
   // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style), "grid3" (3 photos), "meals" (2-6 photos in a grid; add labels: [...] for a caption under each photo), "single" (one big photo) or "strip" (photobooth strip)
   story: [
@@ -486,6 +528,26 @@ function hearts(n = 24, x, y){
     setTimeout(()=>h.remove(), 6000);
   }
 }
+
+/* ---------- question lock ---------- */
+$("qText").textContent = CONFIG.quizQuestion;
+let tries = 0;
+$("qcard").addEventListener("submit", e => {
+  e.preventDefault();
+  const ans = $("qInput").value.trim().toLowerCase();
+  if(ans && ans.includes(CONFIG.quizAnswer.toLowerCase())){
+    $("qlock").classList.add("open");
+    $("qMsg").textContent = "Correct! Obviously 😌💕";
+    $("qInput").blur();
+    hearts(26, innerWidth/2, innerHeight/2);
+    setTimeout(()=>$("quiz").classList.add("gone"), 1300);
+  } else {
+    $("qMsg").textContent = CONFIG.quizWrong[Math.min(tries, CONFIG.quizWrong.length - 1)];
+    tries++;
+    const c = $("qcard"); c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
+    $("qInput").select();
+  }
+});
 
 /* ---------- open the book ---------- */
 $("envelope").addEventListener("click", () => {
