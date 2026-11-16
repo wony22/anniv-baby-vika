@@ -132,10 +132,22 @@
         background:linear-gradient(135deg,#fde2e4,#f6d9de)}
   .meals .shot img{z-index:1}
   .meals .shot::before{width:50px;margin-left:-25px;height:18px;top:-8px;z-index:3}
+  .meals .shot.has-lbl img{height:calc(100% - 12px - clamp(22px,7cqw,30px))}
+  .meals .shot.has-lbl::after{bottom:calc(6px + clamp(22px,7cqw,30px))}
+  .meals .lbl{position:absolute;left:4px;right:4px;bottom:3px;height:clamp(22px,7cqw,30px);display:grid;place-items:center;z-index:2;
+        font-family:Caveat,cursive;font-size:clamp(1rem,4.6cqw,1.3rem);color:var(--plum);line-height:1;white-space:nowrap;overflow:hidden}
   .meals .shot:nth-child(4n+1){transform:rotate(-3deg)}
   .meals .shot:nth-child(4n+2){transform:rotate(2.5deg) translateY(4px)}
   .meals .shot:nth-child(4n+3){transform:rotate(2deg) translateX(3px)}
   .meals .shot:nth-child(4n+4){transform:rotate(-2deg) translateY(-3px)}
+
+  /* one big photo per page */
+  .collage.single{display:block;flex:none;height:auto;width:min(80cqw,calc(96cqh * .8),380px);aspect-ratio:4/5}
+  .single .shot{width:100%;height:100%;--pad:9px;transform:rotate(-2.5deg)}
+  .single .shot img{z-index:1}
+  .single .shot::after{content:attr(data-emoji);position:absolute;inset:9px;border-radius:9px;display:grid;place-items:center;font-size:clamp(3rem,18cqw,4.6rem);
+        background:linear-gradient(135deg,#fde2e4,#f6d9de)}
+  .single .shot::before{z-index:3}
 
   /* three-photo grid */
   .collage.grid3{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:14px;
@@ -231,7 +243,7 @@ const CONFIG = {
   greeting: "Hello my love,",        // first line on the cover page
   startDate: "2025-12-05T00:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
 
-  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style), "grid3" (3 photos) or "meals" (2-6 photos in a grid)
+  // each moment = one page of the album. images: ["photos/x.jpeg", ...] + layout: "phones" (2 tall screenshots), "ticket" (ticket + photo), "solo" (just the ticket, movie-night style), "grid3" (3 photos), "meals" (2-6 photos in a grid; add labels: [...] for a caption under each photo) or "single" (one big photo)
   story: [
     { emoji: "👋", date: "The first hello", title: "Where it all started", text: "From \"okee sahabat denis\" to my favourite person 💕",
       images: ["photos/chat1.jpeg", "photos/chat2.jpeg"] },
@@ -241,7 +253,16 @@ const CONFIG = {
       images: ["photos/gbk1.jpeg", "photos/gbk2.jpeg", "photos/gbk3.jpeg"], layout: "grid3" },
     { emoji: "🍳", date: "Her kitchen",     title: "Made with love",      text: "Thank you for every meal you've ever cooked for me — every single one tasted like home 💕",
       images: ["photos/meal1.jpeg", "photos/meal2.jpeg", "photos/meal3.jpeg", "photos/meal4.jpeg"], layout: "meals" },
-    { emoji: "🎡", date: "Favourite trip",  title: "Our little adventure", text: "A trip, a day out, or a random night that became a favourite memory." },
+    { emoji: "🏔️", date: "Little adventure · 1 of 5", title: "Bandung trip",     text: "Cool Bandung air, good food, and you next to me — my favourite kind of getaway 🏔️",
+      images: ["photos/bandung.jpeg"], layout: "single" },
+    { emoji: "🎡", date: "Little adventure · 2 of 5", title: "KidZania",         text: "Two grown-ups at KidZania… and somehow we had more fun than the kids 😆",
+      images: ["photos/kidzania.jpeg"], layout: "single" },
+    { emoji: "🤸", date: "Little adventure · 3 of 5", title: "Bounce Street",    text: "Bouncing around like kids again — best workout I've ever had 🤸",
+      images: ["photos/bounce.jpeg"], layout: "single" },
+    { emoji: "🐠", date: "Little adventure · 4 of 5", title: "Jakarta Aquarium", text: "Surrounded by so many fish, but I couldn't stop looking at you 🐠",
+      images: ["photos/aquarium.jpeg"], layout: "single" },
+    { emoji: "❄️", date: "Little adventure · 5 of 5", title: "Trans Snow World", text: "Snow in Jakarta? With you, anything feels possible ❄️",
+      images: ["photos/snow.jpeg"], layout: "single" },
     { emoji: "🌷", date: "Today",           title: "Almost one year",      text: "Almost a whole year later and I'd choose you again, every single time." }
   ],
 
@@ -319,7 +340,7 @@ CONFIG.story.forEach((m, i) => add(
    <div class="date anim" style="--d:.4s">${esc(m.date)}</div>
    <h2 class="title anim" style="--d:.5s">${esc(m.title)}</h2>
    ${m.images
-     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}"${m.layout === "meals" ? ` style="--cols:${m.images.length > 4 ? 3 : 2};--rows:${Math.ceil(m.images.length / (m.images.length > 4 ? 3 : 2))}"` : ""}>${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map(src => `<div class="shot" data-emoji="${m.layout === "meals" ? "🍳" : ""}"><img src="${src}" alt="" onerror="this.remove()"></div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}</div></div>
+     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}"${m.layout === "meals" ? ` style="--cols:${m.images.length > 4 ? 3 : 2};--rows:${Math.ceil(m.images.length / (m.images.length > 4 ? 3 : 2))}"` : ""}>${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map((src, k) => `<div class="shot${m.labels ? " has-lbl" : ""}" data-emoji="${m.emojis ? m.emojis[k] : (m.layout === "meals" ? "🍳" : m.layout === "single" ? m.emoji : "")}"><img src="${src}" alt="" onerror="this.remove()">${m.labels ? `<span class="lbl">${esc(m.labels[k])}</span>` : ""}</div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}</div></div>
         <p class="note anim" style="--d:.9s">${esc(m.text)}</p>`
      : `<p class="text anim" style="--d:.65s">${esc(m.text)}</p>`}`,
   m.images ? "story has-shots" : "story"));
