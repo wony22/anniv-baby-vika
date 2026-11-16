@@ -149,17 +149,17 @@
         background:linear-gradient(135deg,#fde2e4,#f6d9de)}
   .single .shot::before{z-index:3}
 
-  /* photobooth strip */
-  .collage.strip{display:block;position:relative;flex:none;height:min(100cqh,540px,calc(78cqw * 2.6));aspect-ratio:1/2.6;width:auto}
+  /* photobooth strip (frame takes the shape of the photo) */
+  .collage.strip{--ar:.385;display:block;position:relative;flex:none;height:min(100cqh,540px,calc(74cqw / var(--ar)));aspect-ratio:var(--ar);width:auto}
   .strip .shot{width:100%;height:100%;--pad:8px;transform:rotate(3deg);border-radius:6px}
-  .strip .shot img{z-index:1;object-fit:contain;border-radius:3px}
+  .strip .shot img{z-index:1;object-fit:cover;border-radius:3px}
   .strip .shot::after{content:attr(data-emoji);position:absolute;inset:8px;border-radius:3px;display:grid;place-items:center;font-size:clamp(2.4rem,14cqw,3.6rem);
         background:repeating-linear-gradient(180deg,#f6d9de 0 23%,#fff 23% 25%)}
   .strip .shot::before{z-index:3}
   .strip .deco{position:absolute;z-index:4;line-height:1;font-size:clamp(1.6rem,8cqw,2.4rem);user-select:none}
-  .strip .d1{left:-34%;top:12%;transform:rotate(-12deg)}
-  .strip .d2{right:-34%;bottom:16%;transform:rotate(10deg)}
-  .strip .d3{right:-26%;top:4%;font-size:clamp(1.1rem,5cqw,1.5rem)}
+  .strip .d1{left:calc(-1 * clamp(30px,10cqw,52px));top:12%;transform:rotate(-12deg)}
+  .strip .d2{right:calc(-1 * clamp(30px,10cqw,52px));bottom:16%;transform:rotate(10deg)}
+  .strip .d3{right:calc(-1 * clamp(22px,7cqw,40px));top:4%;font-size:clamp(1.1rem,5cqw,1.5rem)}
 
   /* three-photo grid */
   .collage.grid3{display:grid;grid-template-columns:1.3fr 1fr;grid-template-rows:1fr 1fr;gap:14px;
@@ -265,7 +265,7 @@ const CONFIG = {
       images: ["photos/gbk1.jpeg", "photos/gbk2.jpeg", "photos/gbk3.jpeg"], layout: "grid3" },
     { emoji: "🍳", date: "Her kitchen",     title: "Made with love",      text: "Thank you for every meal you've ever cooked for me — every single one tasted like home 💕",
       images: ["photos/meal1.jpeg", "photos/meal2.jpeg", "photos/meal3.jpeg", "photos/meal4.jpeg"], layout: "meals" },
-    { emoji: "📸", date: "Our first photobooth", title: "Say cheese!",  text: "Our very first photobooth together — four little frames I'll keep forever 📸",
+    { emoji: "📸", date: "Our first photobooth", title: "Say cheese!",  text: "Our very first photobooth together — every little frame I'll keep forever 📸",
       images: ["photos/photobooth.jpeg"], layout: "strip" },
     { emoji: "🏔️", date: "Little adventure · 1 of 4", title: "Bandung trip",     text: "Cool Bandung air, good food, and you next to me — my favourite kind of getaway 🏔️",
       images: ["photos/bandung.jpeg"], layout: "single" },
@@ -352,7 +352,7 @@ CONFIG.story.forEach((m, i) => add(
    <div class="date anim" style="--d:.4s">${esc(m.date)}</div>
    <h2 class="title anim" style="--d:.5s">${esc(m.title)}</h2>
    ${m.images
-     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}"${m.layout === "meals" ? ` style="--cols:${m.images.length > 4 ? 3 : 2};--rows:${Math.ceil(m.images.length / (m.images.length > 4 ? 3 : 2))}"` : ""}>${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map((src, k) => `<div class="shot${m.labels ? " has-lbl" : ""}" data-emoji="${m.emojis ? m.emojis[k] : (m.layout === "meals" ? "🍳" : (m.layout === "single" || m.layout === "strip") ? m.emoji : "")}"><img src="${src}" alt="" onerror="this.remove()">${m.labels ? `<span class="lbl">${esc(m.labels[k])}</span>` : ""}</div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}${m.layout === "strip" ? `<span class="deco d1">💕</span><span class="deco d2">✨</span><span class="deco d3">⭐</span>` : ""}</div></div>
+     ? `<div class="collage-wrap anim" style="--d:.65s"><div class="collage ${m.layout || "phones"}"${m.layout === "meals" ? ` style="--cols:${m.images.length > 4 ? 3 : 2};--rows:${Math.ceil(m.images.length / (m.images.length > 4 ? 3 : 2))}"` : ""}>${m.layout === "solo" ? `<div class="film"></div>` : ""}${m.images.map((src, k) => `<div class="shot${m.labels ? " has-lbl" : ""}" data-emoji="${m.emojis ? m.emojis[k] : (m.layout === "meals" ? "🍳" : (m.layout === "single" || m.layout === "strip") ? m.emoji : "")}"><img src="${src}" alt="" onerror="this.remove()" onload="var c=this.closest('.strip');if(c)c.style.setProperty('--ar',this.naturalWidth/this.naturalHeight)">${m.labels ? `<span class="lbl">${esc(m.labels[k])}</span>` : ""}</div>`).join("")}${m.layout === "solo" ? `<span class="deco clap">🎬</span><span class="deco pop">🍿</span><span class="deco spark s1">✨</span><span class="deco spark s2">✨</span><span class="deco spark s3">✨</span><span class="deco stamp">ADMIT TWO ♥</span>` : ""}${m.layout === "strip" ? `<span class="deco d1">💕</span><span class="deco d2">✨</span><span class="deco d3">⭐</span>` : ""}</div></div>
         <p class="note anim" style="--d:.9s">${esc(m.text)}</p>`
      : `<p class="text anim" style="--d:.65s">${esc(m.text)}</p>`}`,
   m.images ? "story has-shots" : "story"));
