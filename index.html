@@ -191,6 +191,12 @@
   .back-f .n{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rose)}
   .back-f p{font-family:Fraunces,serif;font-style:italic;font-weight:300;font-size:clamp(1.2rem,4.4vw,1.45rem);line-height:1.35;color:var(--plum);margin-top:14px}
   .hint{margin-top:16px;color:var(--muted);font-size:.82rem}
+  .back-f.wall{justify-content:flex-start;padding:18px 16px 14px}
+  .back-f .wall-text{display:none}
+  .back-f.wall p{display:none}
+  .back-f.wall .wall-text{display:block;flex:1;overflow:hidden;margin-top:8px;text-align:justify;font-size:clamp(6.5px,1.9vmin,8px);line-height:1.38;color:var(--plum)}
+  .wall-text b{color:var(--rose);font-weight:500}
+  .wall-text .end{display:block;text-align:center;margin-top:6px;font-family:Caveat,cursive;font-size:1.25rem;color:var(--rose)}
 
   /* ---------- Letter ---------- */
   .page.letter-page{justify-content:flex-start;text-align:left;align-items:stretch;
@@ -279,21 +285,34 @@ const CONFIG = {
       images: ["photos/today.jpeg"], layout: "single" }
   ],
 
-   photos: [],   // "Little moments" pages removed
+  photos: [],   // "Little moments" pages removed
 
+  // the card page: 3 "things", then a 4th flip shows the wall of compliments
   reasons: [
-    "The way you laugh at your own jokes before you finish them.",
-    "You make ordinary days feel like something worth remembering.",
-    "How you always know when something's wrong, even when I say I'm fine.",
-    "Your kindness — to me, to strangers, to everyone.",
-    "You make me want to be a better person.",
-    "The face you make when food is really good.",
-    "You're my favourite person to do nothing with.",
-    "You believe in me, even when I don't.",
-    "Your hugs fix things words can't.",
-    "You're beautiful, and you don't even try.",
-    "Every plan I make for the future has you in it.",
-    "Because you're you. That's the whole reason."
+    "You're so pretty 💕",
+    "You're kind-hearted 🤍",
+    "Only 3? 🤔"
+  ],
+
+  compliments: [
+    "your smile", "your laugh", "your eyes", "your hugs", "your patience", "your cooking", "your voice", "your hand in mine", "your sleepy face",
+    "your good-morning texts", "your goodnight texts", "your kindness", "your honesty", "your hard work", "your creativity", "your style",
+    "your hair", "your cheeks", "your pout", "your silly faces", "your jokes", "your random voice notes", "your stickers", "your WKWKWK",
+    "the way you say my name", "the way you look at me", "the way you care for everyone", "the way you listen", "the way you remember little things",
+    "the way you hold my arm", "the way you get excited about food", "your appetite", "your taste in food", "your taste in movies", "your playlists",
+    "your handwriting", "your strength", "your gentleness", "your courage", "your calm", "your energy", "your warmth", "your loyalty",
+    "your humility", "your ambition", "your dreams", "your plans", "your cute angry face", "your 'hmm'", "your 'ih'", "your love for your family",
+    "your friendships", "how you make strangers feel welcome", "how you make me feel safe", "how you make me laugh", "how you make me better",
+    "how you forgive", "how you apologise", "how you stay", "how you believe in me", "how you cheer me up", "how you calm me down",
+    "how you dance badly", "how you sing in the car", "how you take photos", "how you pose", "how you plan dates", "how you surprise me",
+    "how you share your food", "how you steal my food", "how you get sleepy at 9pm", "how you wake up grumpy", "how you get cold easily",
+    "how you hold my hand in crowds", "how you text 'udah sampe?'", "how you worry about me", "how you pray for me", "how you're polite to everyone",
+    "how you treat waiters", "how you love animals", "how you cry at movies", "how you get shy", "how you blush", "how you tease me",
+    "how you call me out", "how you pick the best snacks", "how you choose outfits", "how you smell", "how you fit in my hug",
+    "how you make any place feel like home", "your patience with my jokes", "your patience with traffic", "your beautiful heart",
+    "your beautiful mind", "your beautiful soul", "your smart brain", "your common sense", "your advice", "your opinions", "your stories",
+    "your memory", "your effort", "your sincerity", "your thoughtfulness", "your generosity", "your little habits", "your big dreams",
+    "your quiet moments", "your loud moments", "every version of you", "you on good days", "you on bad days", "you, just you"
   ],
 
   letter:
@@ -362,12 +381,13 @@ CONFIG.photos.forEach((p, i) => {
 });
 
 // reasons
-add(`<div class="eyebrow anim" style="--d:.15s">Just a few of them</div>
-     <h2 class="title anim" style="--d:.3s">Reasons I <em>love</em> you</h2>
+add(`<div class="eyebrow anim" style="--d:.15s">Just three, I promise</div>
+     <h2 class="title anim" style="--d:.3s">3 things I <em>love</em> about you</h2>
      <div class="card-stage anim" id="stage" style="--d:.5s">
        <div class="rcard" id="rcard">
-         <div class="face front-f"><div class="big">${CONFIG.reasons.length}</div><small>reasons · tap me</small></div>
-         <div class="face back-f"><div class="n" id="rNum"></div><p id="rText"></p></div>
+         <div class="face front-f"><div class="big">${CONFIG.reasons.length}</div><small>things · tap me</small></div>
+         <div class="face back-f" id="rBack"><div class="n" id="rNum"></div><p id="rText"></p>
+           <div class="wall-text">${CONFIG.compliments.map((c, k) => k % 7 === 0 ? `<b>${esc(c)}</b>` : esc(c)).join(" · ")}<span class="end">…and a thousand more ♥</span></div></div>
        </div>
      </div>
      <p class="hint anim" id="rHint" style="--d:.7s">Tap the card to flip</p>`);
@@ -463,18 +483,28 @@ const daysLeft = Math.ceil((anniv - Date.now()) / 864e5);
 $("until").textContent = daysLeft > 0 ? `and ${daysLeft} more days until our 1st anniversary 💕` : "and it's officially been a whole year 💕";
 
 /* ---------- reasons card ---------- */
-let r = -1; const card = $("rcard");
+function fitWall(){            // shrink the tiny text until the whole list fits on the card
+  const w = document.querySelector(".wall-text");
+  let size = 10; w.style.fontSize = size + "px";
+  while(w.scrollHeight > w.clientHeight && size > 4.5){ size -= .25; w.style.fontSize = size + "px"; }
+}
+let r = -1; const card = $("rcard"), total = CONFIG.reasons.length;
 $("stage").addEventListener("click", () => {
   if(card.classList.contains("flipped")){
     card.classList.remove("flipped");
-    $("rHint").textContent = r >= CONFIG.reasons.length-1 ? "That's all of them… for now. Tap to start again" : "Tap for the next one";
+    $("rHint").textContent = r === total - 1 ? "Hmm… wait. Tap again 🤭"
+                           : r >= total ? "Okay, okay — tap to start again ♥"
+                           : "Tap for the next one";
     return;
   }
-  r = (r+1) % CONFIG.reasons.length;
-  $("rNum").textContent = `Reason ${r+1} of ${CONFIG.reasons.length}`;
-  $("rText").textContent = CONFIG.reasons[r];
+  r = (r + 1) % (total + 1);
+  const wall = r === total;
+  $("rBack").classList.toggle("wall", wall);
+  $("rNum").textContent = wall ? "Okay fine… the real list" : `Thing ${r+1} of ${total}`;
+  $("rText").textContent = wall ? "" : CONFIG.reasons[r];
   card.classList.add("flipped");
-  $("rHint").textContent = "Tap to flip back";
+  $("rHint").textContent = wall ? "Still not all of them, honestly ♥" : "Tap to flip back";
+  if(wall){ hearts(16); fitWall(); }
 });
 
 /* ---------- letter typewriter ---------- */
