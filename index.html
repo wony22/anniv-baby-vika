@@ -110,4 +110,298 @@
   #finale{text-align:center;min-height:90svh;display:flex;flex-direction:column;justify-content:center;align-items:center}
   .btns{display:flex;gap:16px;margin-top:38px;position:relative;min-height:60px;justify-content:center;flex-wrap:wrap}
   button{font:inherit;border:0;cursor:pointer}
-  .yes{background:var(--rose);color:#fff;padding:16px 38px;border-radius:999px;font-size:1.05rem;font-weight:500;box-shadow:0 12px 28px
+  .yes{background:var(--rose);color:#fff;padding:16px 38px;border-radius:999px;font-size:1.05rem;font-weight:500;box-shadow:0 12px 28px rgba(217,87,122,.35);transition:transform .2s}
+  .yes:hover{transform:scale(1.06)}
+  .no{background:transparent;color:var(--muted);padding:16px 28px;border-radius:999px;border:1px solid #e6cfd5;transition:transform .25s ease}
+  .answer{margin-top:34px;opacity:0;transition:opacity 1s}
+  .answer.on{opacity:1}
+  .answer .hand{font-size:clamp(2rem,7vw,3rem);color:var(--rose)}
+  footer{text-align:center;padding:40px 20px 60px;color:var(--muted);font-size:.85rem}
+
+  .heart{position:fixed;pointer-events:none;z-index:60;animation:float linear forwards;user-select:none}
+  @keyframes float{to{transform:translateY(-110vh) rotate(var(--r));opacity:0}}
+
+  @media(max-width:520px){
+    section{padding:76px 18px}
+    .counter{grid-template-columns:repeat(2,1fr)}
+    .gallery{grid-template-columns:repeat(2,1fr);gap:16px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<!-- =================== INTRO =================== -->
+<div id="gate">
+  <div class="gate-inner">
+    <div class="envelope" id="envelope" role="button" aria-label="Open the letter">
+      <div class="body"></div><div class="flap"></div><div class="front"></div>
+      <div class="seal">♥</div>
+      <div class="to hand" id="envTo">For you</div>
+    </div>
+    <p>tap to open</p>
+  </div>
+</div>
+
+<!-- =================== HERO =================== -->
+<section id="hero">
+  <div class="hand" id="heroHi">Hey you,</div>
+  <h1>Happy <em>1st</em><br>Anniversary</h1>
+  <div class="sub" id="heroNames">You &amp; Me · 365 days of us</div>
+  <div class="scroll-cue">scroll ↓</div>
+</section>
+
+<!-- =================== COUNTER =================== -->
+<section id="counter">
+  <div class="reveal">
+    <div class="eyebrow">Time together</div>
+    <h2 class="title">Every second <em>counts</em></h2>
+    <div class="counter">
+      <div class="unit"><b id="cD">0</b><span>days</span></div>
+      <div class="unit"><b id="cH">0</b><span>hours</span></div>
+      <div class="unit"><b id="cM">0</b><span>minutes</span></div>
+      <div class="unit"><b id="cS">0</b><span>seconds</span></div>
+    </div>
+    <p class="since" id="since"></p>
+  </div>
+</section>
+
+<!-- =================== STORY =================== -->
+<section id="story">
+  <div class="reveal">
+    <div class="eyebrow">Our story</div>
+    <h2 class="title">How we got <em>here</em></h2>
+  </div>
+  <div class="timeline" id="timeline"></div>
+</section>
+
+<!-- =================== GALLERY =================== -->
+<section id="photos">
+  <div class="reveal">
+    <div class="eyebrow">Little moments</div>
+    <h2 class="title">Our favourite <em>frames</em></h2>
+    <p class="lead">Tap a photo to see it bigger.</p>
+  </div>
+  <div class="gallery" id="gallery"></div>
+</section>
+<div id="lightbox"><div class="polaroid"><div class="ph" id="lbPh"></div><div class="cap" id="lbCap"></div></div></div>
+
+<!-- =================== REASONS =================== -->
+<section id="reasons">
+  <div class="reveal">
+    <div class="eyebrow">Just a few of them</div>
+    <h2 class="title">Reasons I <em>love</em> you</h2>
+  </div>
+  <div class="card-stage reveal" id="stage">
+    <div class="rcard" id="rcard">
+      <div class="face front-f"><div class="big" id="rCount">12</div><small>reasons · tap me</small></div>
+      <div class="face back-f"><div class="n" id="rNum"></div><p id="rText"></p></div>
+    </div>
+  </div>
+  <p class="hint" id="rHint">Tap the card to flip</p>
+</section>
+
+<!-- =================== LETTER =================== -->
+<section id="letter">
+  <div class="reveal">
+    <div class="eyebrow">A letter for you</div>
+    <h2 class="title">Read this <em>slowly</em></h2>
+  </div>
+  <div class="letter reveal"><div class="hand" id="letterText"></div></div>
+</section>
+
+<!-- =================== FINALE =================== -->
+<section id="finale">
+  <div class="reveal">
+    <div class="eyebrow">One last thing</div>
+    <h2 class="title">Year two,<br><em>together?</em></h2>
+    <div class="btns" id="btns">
+      <button class="yes" id="yes">Yes, always ♥</button>
+      <button class="no" id="no">No</button>
+    </div>
+    <div class="answer" id="answer"><div class="hand">I knew it. I love you.</div></div>
+  </div>
+</section>
+<footer id="foot">made with love, just for you</footer>
+
+<script>
+/* ==============================================================
+   EDIT EVERYTHING HERE ✏️  — names, date, story, photos, letter
+   ============================================================== */
+const CONFIG = {
+  herName: "Vika",                   // her name or nickname
+  yourName: "Dennis",                    // your name
+  startDate: "2025-11-16T19:00:00",  // the day you became official (YYYY-MM-DDTHH:MM:SS)
+
+  story: [
+    { date: "The first hello", title: "Where it all started", text: "Write how you two met here — the place, the first thing you noticed about her." },
+    { date: "First date",      title: "Nervous & happy",     text: "Where did you go? What did you eat? What made you want a second date?" },
+    { date: "Becoming us",     title: "Official",            text: "The day you asked her (or she asked you!). What did it feel like?" },
+    { date: "Favourite trip",  title: "Our little adventure", text: "A trip, a day out, or a random night that became a favourite memory." },
+    { date: "Today",           title: "One whole year",       text: "365 days later and I'd choose you again, every single time." }
+  ],
+
+  // photo: leave "" to show the emoji placeholder. Send me your photos and I'll put them in.
+  photos: [
+    { photo: "", emoji: "☕", caption: "our first date" },
+    { photo: "", emoji: "🌅", caption: "that sunset" },
+    { photo: "", emoji: "🍜", caption: "late-night food" },
+    { photo: "", emoji: "📸", caption: "your favourite pic" },
+    { photo: "", emoji: "🎡", caption: "our trip" },
+    { photo: "", emoji: "💕", caption: "us, always" }
+  ],
+
+  reasons: [
+    "The way you laugh at your own jokes before you finish them.",
+    "You make ordinary days feel like something worth remembering.",
+    "How you always know when something's wrong, even when I say I'm fine.",
+    "Your kindness — to me, to strangers, to everyone.",
+    "You make me want to be a better person.",
+    "The face you make when food is really good.",
+    "You're my favourite person to do nothing with.",
+    "You believe in me, even when I don't.",
+    "Your hugs fix things words can't.",
+    "You're beautiful, and you don't even try.",
+    "Every plan I make for the future has you in it.",
+    "Because you're you. That's the whole reason."
+  ],
+
+  letter:
+`Dear {her},
+
+One year ago I had no idea how much my life was about to change.
+
+Thank you for every laugh, every late-night talk, every time you stayed patient with me. You've turned "me" into "us", and I wouldn't trade it for anything.
+
+Here's to our first year — and to all the years after it.
+
+I love you. Always.
+
+— {you}`
+};
+/* ============================================================== */
+
+const $ = id => document.getElementById(id);
+const fill = s => s.replace(/\{her\}/g, CONFIG.herName).replace(/\{you\}/g, CONFIG.yourName);
+
+// names
+$("envTo").textContent = "For " + CONFIG.herName + " 💕";
+$("heroHi").textContent = "Hello my love,";
+$("heroNames").innerHTML = `${CONFIG.yourName} &amp; ${CONFIG.herName}`;
+$("foot").textContent = `made with love by ${CONFIG.yourName}, just for ${CONFIG.herName}`;
+
+// floating hearts
+function hearts(n = 24, x, y){
+  const chars = ["♥","❤","💕","💗","✨"];
+  for(let i=0;i<n;i++){
+    const h = document.createElement("span");
+    h.className = "heart";
+    h.textContent = chars[Math.floor(Math.random()*chars.length)];
+    h.style.left = (x ?? Math.random()*innerWidth) + (Math.random()*120-60) + "px";
+    h.style.top = (y ?? innerHeight) + "px";
+    h.style.fontSize = (14 + Math.random()*22) + "px";
+    h.style.color = ["#d9577a","#f19bb0","#c9974a","#5a1e3a"][i%4];
+    h.style.setProperty("--r", (Math.random()*80-40) + "deg");
+    h.style.animationDuration = (2.5 + Math.random()*2.5) + "s";
+    h.style.animationDelay = (Math.random()*.6) + "s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(), 6000);
+  }
+}
+
+// gate
+document.body.style.overflow = "hidden";
+$("envelope").addEventListener("click", () => {
+  $("envelope").classList.add("open");
+  hearts(30, innerWidth/2, innerHeight/2);
+  setTimeout(()=>{ $("gate").classList.add("gone"); document.body.style.overflow = ""; }, 900);
+});
+
+// counter
+const start = new Date(CONFIG.startDate);
+$("since").textContent = "since " + start.toLocaleDateString(undefined,{day:"numeric",month:"long",year:"numeric"});
+function tick(){
+  let d = Math.max(0, Date.now() - start);
+  const D = Math.floor(d/864e5); d -= D*864e5;
+  const H = Math.floor(d/36e5);  d -= H*36e5;
+  const M = Math.floor(d/6e4);   d -= M*6e4;
+  $("cD").textContent = D; $("cH").textContent = H;
+  $("cM").textContent = M; $("cS").textContent = Math.floor(d/1e3);
+}
+tick(); setInterval(tick, 1000);
+
+// timeline
+$("timeline").innerHTML = CONFIG.story.map(m =>
+  `<div class="moment reveal"><div class="date">${m.date}</div><h3>${m.title}</h3><p>${m.text}</p></div>`).join("");
+
+// gallery
+const grads = ["#f6d9de,#f1b7c4","#fbe7d0,#f2c79a","#e9dff3,#c9b4e6","#d9ecef,#a9d3da","#fde2e4,#d9577a66","#f3e2cf,#c9974a88"];
+const phStyle = (p,i) => p.photo ? `background-image:url('${p.photo}')` : `background:linear-gradient(135deg,${grads[i%grads.length]})`;
+$("gallery").innerHTML = CONFIG.photos.map((p,i) =>
+  `<div class="polaroid reveal" data-i="${i}"><div class="ph" style="${phStyle(p,i)}">${p.photo?"":p.emoji}</div><div class="cap">${p.caption}</div></div>`).join("");
+$("gallery").addEventListener("click", e => {
+  const card = e.target.closest(".polaroid"); if(!card) return;
+  const i = +card.dataset.i, p = CONFIG.photos[i];
+  $("lbPh").setAttribute("style", phStyle(p,i)); $("lbPh").textContent = p.photo ? "" : p.emoji;
+  $("lbCap").textContent = p.caption; $("lightbox").classList.add("on");
+});
+$("lightbox").addEventListener("click", () => $("lightbox").classList.remove("on"));
+
+// reasons
+let r = -1; const card = $("rcard");
+$("rCount").textContent = CONFIG.reasons.length;
+$("stage").addEventListener("click", () => {
+  if(card.classList.contains("flipped")){
+    card.classList.remove("flipped");
+    $("rHint").textContent = r >= CONFIG.reasons.length-1 ? "That's all of them… for now. Tap to start again" : "Tap for the next one";
+    return;
+  }
+  r = (r+1) % CONFIG.reasons.length;
+  $("rNum").textContent = `Reason ${r+1} of ${CONFIG.reasons.length}`;
+  $("rText").textContent = CONFIG.reasons[r];
+  card.classList.add("flipped");
+  $("rHint").textContent = "Tap to flip back";
+});
+
+// letter typewriter
+const letter = fill(CONFIG.letter); let typed = false;
+function typeLetter(){
+  if(typed) return; typed = true;
+  const el = $("letterText"); let i = 0;
+  el.innerHTML = '<span></span><i class="caret"></i>';
+  const span = el.firstChild;
+  (function step(){
+    span.textContent = letter.slice(0, ++i);
+    if(i < letter.length) setTimeout(step, letter[i-1] === "\n" ? 260 : 34);
+    else el.querySelector(".caret").remove();
+  })();
+}
+
+// finale
+const no = $("no"); let dodges = 0;
+const noTexts = ["No","Are you sure?","Really??","Try again 🙃","Nope, not allowed","Just press yes ♥"];
+function dodge(){
+  dodges++;
+  no.textContent = noTexts[Math.min(dodges, noTexts.length-1)];
+  no.style.transform = `translate(${Math.random()*200-100}px, ${Math.random()*90-45}px)`;
+  $("yes").style.transform = `scale(${1 + Math.min(dodges,6)*.1})`;
+}
+no.addEventListener("mouseenter", dodge);
+no.addEventListener("click", e => { e.preventDefault(); dodge(); });
+$("yes").addEventListener("click", e => {
+  $("answer").classList.add("on"); no.style.display = "none";
+  for(let k=0;k<4;k++) setTimeout(()=>hearts(28), k*400);
+});
+
+// reveal on scroll
+const io = new IntersectionObserver(es => es.forEach(en => {
+  if(en.isIntersecting){
+    en.target.classList.add("in");
+    if(en.target.closest("#letter") && en.target.classList.contains("letter")) typeLetter();
+    io.unobserve(en.target);
+  }
+}), {threshold:.15});
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+</script>
+</body>
+</html>
